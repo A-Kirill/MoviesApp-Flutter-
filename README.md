@@ -25,13 +25,13 @@ MoviesApp - cross platform applications on Flutter for Android/iOS, shows the la
 
 ## Before Run
 
-The application uses a free unofficial kinopoisk.ru API that provides access to site data. For access, you must receive a token, which will be available after registration at https://kinopoiskapiunofficial.tech and put it in the file Movies_flutter/lib/network/apiService.dart
+The application uses a free unofficial kinopoisk.ru API that provides access to site data. For access, you must receive a token, which will be available after registration at https://kinopoiskapiunofficial.tech and put it in the file lib/network/apiService.dart
 
 
 ## Screenshots
 
 <p float="left">
-  <img src="Movies_flutter/assets/images/shot1.png" width="200" />
-  <img src="Movies_flutter/assets/images/shot2.png" width="200" /> 
-  <img src="Movies_flutter/assets/images/shot3.png" width="200" />
+  <img src="assets/images/shot1.png" width="200" />
+  <img src="assets/images/shot2.png" width="200" /> 
+  <img src="assets/images/shot3.png" width="200" />
 </p>
