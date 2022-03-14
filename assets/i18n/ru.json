@@ -1,0 +1,26 @@
+{
+  "app_bar": {
+    "title": "Муви Апп",
+    "bookmarks": "Избранное"
+  },
+  "bottom_bar": {
+    "list": "Список",
+    "bookmarks": "Избранное",
+    "settings": "Настройки"
+  },
+  "settings": {
+    "language": {
+      "en": "Англ",
+      "ru": "Рус"
+    },
+    "appearance": "Интерфейс",
+    "language_title": "Язык",
+    "theme": "Тема",
+    "dark" : "Тёмная",
+    "light": "Светлая"
+  },
+  "common": {
+    "search": "Поиск",
+    "no_video": "Видео не найдено"
+  }
+}

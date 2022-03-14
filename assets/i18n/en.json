@@ -1,0 +1,26 @@
+{
+  "app_bar": {
+    "title": "MoviesApp",
+    "bookmarks": "Bookmarks"
+  },
+  "bottom_bar": {
+    "list": "List",
+    "bookmarks": "Bookmarks",
+    "settings": "Settings"
+  },
+  "settings": {
+    "language": {
+      "en": "Eng",
+      "ru": "Rus"
+    },
+    "appearance": "Appearance",
+    "language_title": "Language",
+    "theme": "Theme",
+    "dark" : "Dark",
+    "light": "Light"
+  },
+  "common": {
+    "search": "Search",
+    "no_video": "No video"
+  }
+}
