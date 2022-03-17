@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:movies_fltr/models/movies_response.dart';
-import 'package:movies_fltr/network/api_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../supporting/supporting_methods.dart';
+import '../blocs/movie_bloc/movie_bloc.dart';
 
 class MoviesList extends StatefulWidget {
   const MoviesList({Key? key}) : super(key: key);
@@ -12,17 +12,14 @@ class MoviesList extends StatefulWidget {
 }
 
 class _MoviesListState extends State<MoviesList> {
-
-  late Future<List<Movie>> futureMovies;
-  late ApiService service;
+  final MovieBloc _moviesBloc = MovieBloc();
   bool isSearchClicked = false;
   final TextEditingController _queryString = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    service = ApiService();
-    futureMovies = fetchMovies();
+    _moviesBloc.add(GetMovieList());
   }
 
   @override
@@ -43,23 +40,39 @@ class _MoviesListState extends State<MoviesList> {
               buildSliverAppBar(),
             ];
           },
-          body: FutureBuilder<List<Movie>>(
-              future: futureMovies,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      List<Movie> movieList = snapshot.data!;
-                      Movie movie = movieList[index];
-                      return buildCard(movie, context);
-                    },
+          body: BlocProvider(
+            create: (_) => _moviesBloc,
+            child: BlocListener<MovieBloc, MovieState>(
+              listener: (context, state) {
+                if (state is MovieError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message!),
+                    ),
                   );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
                 }
-                return const Center(child: CircularProgressIndicator());
-              }),
+              },
+              child: BlocBuilder<MovieBloc, MovieState>(
+                builder: (context, state) {
+                  if (state is MovieInitial) {
+                    return _buildLoading();
+                  } else if (state is MovieLoading) {
+                    return _buildLoading();
+                  } else if (state is MovieLoaded) {
+                    return ListView.builder(
+                        itemCount: state.movie.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return buildCard(state.movie[index], context);
+                        });
+                  } else if (state is MovieError) {
+                    return Container();
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -82,21 +95,19 @@ class _MoviesListState extends State<MoviesList> {
                     controller: _queryString,
                     decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.grey, width: 1.0),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1.0),
                           borderRadius: BorderRadius.circular(25.0),
                         ),
                         contentPadding: const EdgeInsets.all(10),
                         border: const OutlineInputBorder(),
                         labelText: translate('common.search'),
                         labelStyle: const TextStyle(fontSize: 10)),
-
                     keyboardType: TextInputType.text,
                     style: const TextStyle(fontSize: 10),
                     maxLines: 1,
                     onSubmitted: (String value) async {
-                      searchMovies(value).then((value) {
-                        setState(() {});
-                      });
+                      _moviesBloc.add(GetSearchedMovies(value));
                     }),
               )
             : Text(translate('app_bar.title')),
@@ -109,29 +120,13 @@ class _MoviesListState extends State<MoviesList> {
               isSearchClicked = !isSearchClicked;
             });
           },
-          icon:
-              isSearchClicked ? const Icon(Icons.close_outlined)
-                  : const Icon(Icons.search),
+          icon: isSearchClicked
+              ? const Icon(Icons.close_outlined)
+              : const Icon(Icons.search),
         )
       ],
     );
   }
 
-  Future<List<Movie>> fetchMovies() async {
-    futureMovies = service.getPremiers(month: 'MARCH', year: '2022');
-    return futureMovies;
-  }
-
-  Future<List<Movie>> searchMovies(String name) async {
-    futureMovies = service.getSearchedMovies(name);
-    return futureMovies;
-  }
-
-//from json
-// Future loadMovies() async {
-//   final jsonString = await rootBundle.loadString('assets/movies1.json');
-//   setState(() {
-//     _movieList = ApiMoviesQuery.fromJson(jsonDecode(jsonString)).items;
-//   });
-// }
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }

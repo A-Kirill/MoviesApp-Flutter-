@@ -3,7 +3,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:movies_fltr/storage/favorite_notifier.dart';
 import 'package:provider/provider.dart';
 
-import '../models/movies_response.dart';
+import '../models/models.dart';
 import '../supporting/supporting_methods.dart';
 
 class FavoriteList extends StatefulWidget {
