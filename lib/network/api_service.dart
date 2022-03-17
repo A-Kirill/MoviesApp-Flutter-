@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:movies_fltr/models/images_response.dart';
-import 'package:movies_fltr/models/movies_response.dart';
-import 'package:movies_fltr/auth//secrets.dart';
-import '../models/video_response.dart';
+import 'package:movies_fltr/models/models.dart';
+import 'package:movies_fltr/auth/secrets.dart';
 
 class ApiService {
   final String baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/';

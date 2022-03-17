@@ -2,9 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import '../models/movies_response.dart';
+import '../models/models.dart';
 import '../ui/movie_details.dart';
-
 
 BoxDecoration buildBackgroundDecoration(context) {
   var brightness = Theme.of(context).brightness;
@@ -28,7 +27,8 @@ BoxDecoration buildBackgroundDecoration(context) {
 
 Widget buildCard(Movie movie, dynamic context) {
   const double _minLength = 10.0;
-  const titleStyle = TextStyle(fontSize: 15, fontWeight: FontWeight.w500);
+  const titleStyle =
+      TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black);
   initializeDateFormatting('ru');
 
   return GestureDetector(
@@ -77,11 +77,14 @@ Widget buildCard(Movie movie, dynamic context) {
                     ],
                   ),
                   const SizedBox(height: _minLength),
-                  Text(movie.getGenres),
+                  Text(movie.getGenres, style: const TextStyle(color: Colors.black)),
                   const SizedBox(height: _minLength),
-                  Text(movie.premiereRu != null
-                      ? "В кино с ${DateFormat.yMMMd('ru').format(movie.premiereRu!)}"
-                      : "")
+                  Text(
+                    movie.premiereRu != null
+                        ? "В кино с ${DateFormat.yMMMd('ru').format(movie.premiereRu!)}"
+                        : "",
+                    style: const TextStyle(color: Colors.black),
+                  )
                 ],
               ),
             ))

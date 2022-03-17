@@ -1,7 +1,7 @@
 import 'package:movies_fltr/ui/separator.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter/material.dart';
-import '../models/video_response.dart';
+import '../models/models.dart';
 
 class YoutubeItem extends StatefulWidget {
   final Video video;
