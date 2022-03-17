@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:movies_fltr/models/images_response.dart';
-import 'package:movies_fltr/network/api_service.dart';
+import 'package:movies_fltr/blocs/image_bloc/image_bloc.dart';
+import 'package:movies_fltr/models/models.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImageList extends StatefulWidget {
   final int imageId;
+
   const ImageList({Key? key, required this.imageId}) : super(key: key);
 
   @override
@@ -13,41 +15,46 @@ class ImageList extends StatefulWidget {
 }
 
 class _ImageListState extends State<ImageList> {
-  late Future<List<Images>> futureImages;
-  late ApiService service;
+  final ImageBloc _imageBloc = ImageBloc();
 
   @override
   void initState() {
-    service = ApiService();
-    futureImages = getImagesBy(widget.imageId);
-
     super.initState();
+    _imageBloc.add(GetImageList(widget.imageId));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: FutureBuilder<List<Images>>(
-        future: futureImages,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return CarouselSlider(
-                options: CarouselOptions(
-                  autoPlay: true,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.height,
-                ),
-                items: imageSliders(listImages(snapshot.data!))
-              );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
+      body: BlocProvider(
+        create: (_) => _imageBloc,
+        child: BlocBuilder<ImageBloc, ImageState>(builder: (context, state) {
+          if (state is ImageInitial) {
+            return _buildLoading();
+          } else if (state is ImageLoading) {
+            return _buildLoading();
+          } else if (state is ImageLoaded) {
+            return _buildCarouselSlider(state);
+          } else if (state is ImageError) {
+            return Container();
+          } else {
+            return Container();
           }
-          return const Center(child: CircularProgressIndicator());
-        },
+        }),
       ),
     );
+  }
+
+  CarouselSlider _buildCarouselSlider(ImageLoaded state) {
+    return CarouselSlider(
+        options: CarouselOptions(
+          autoPlay: true,
+          aspectRatio: 2.0,
+          enlargeCenterPage: true,
+          enlargeStrategy: CenterPageEnlargeStrategy.height,
+        ),
+        items: imageSliders(listImages(state.image)));
   }
 
   List<String> listImages(List<Images> images) {
@@ -55,21 +62,21 @@ class _ImageListState extends State<ImageList> {
   }
 
   List<Widget> imageSliders(List<String> list) {
-    return list.map((item) => Container(
-      margin: const EdgeInsets.all(5.0),
-      child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-        child: CachedNetworkImage(
-          imageUrl: item,
-          width: 1000,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-        ),
-      ),
-    )).toList();
+    return list
+        .map((item) => Container(
+              margin: const EdgeInsets.all(5.0),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                child: CachedNetworkImage(
+                  imageUrl: item,
+                  width: 1000,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
+              ),
+            ))
+        .toList();
   }
 
-  Future<List<Images>> getImagesBy(int id) async {
-    return await service.getImagesFor(id);
-  }
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }

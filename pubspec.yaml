@@ -43,6 +43,8 @@ dependencies:
   flutter_phoenix: ^1.0.0 #refresh ui globally
   path_provider: ^2.0.0
   path: ^1.8.0
+  flutter_bloc: ^8.0.1
+  equatable: ^2.0.3
 
 
 

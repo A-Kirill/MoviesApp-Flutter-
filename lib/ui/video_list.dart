@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movies_fltr/blocs/video_bloc/video_bloc.dart';
 
-import '../models/video_response.dart';
-import '../network/api_service.dart';
 import 'youtube_item.dart';
 
 class VideoList extends StatefulWidget {
@@ -15,14 +15,12 @@ class VideoList extends StatefulWidget {
 }
 
 class _VideoListState extends State<VideoList> {
-  late Future<List<Video>> futureVideos;
-  late ApiService service;
+  final VideoBloc _videoBloc = VideoBloc();
 
   @override
   void initState() {
     super.initState();
-    service = ApiService();
-    futureVideos = getVideosBy(widget.movieId);
+    _videoBloc.add(GetVideoList(widget.movieId));
   }
 
   @override
@@ -30,31 +28,46 @@ class _VideoListState extends State<VideoList> {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(),
-      body: FutureBuilder<List<Video>>(
-        future: futureVideos,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
-              return Center(child: Text(translate('common.no_video'),
-                style: const TextStyle(color: Colors.white),));
+      body: BlocProvider(
+        create: (_) => _videoBloc,
+        child: BlocBuilder<VideoBloc, VideoState>(
+          builder: (context, state) {
+            if (state is VideoInitial) {
+              return _buildLoading();
+            } else if (state is VideoLoading) {
+              return _buildLoading();
+            } else if (state is VideoLoaded) {
+              if (state.videos.isEmpty) {
+                return _buildNoVideo();
+              }
+              return _buildVideoList(state);
+            } else if (state is VideoError) {
+              return Container();
+            } else {
+              return Container();
             }
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                List<Video> videoList = snapshot.data!;
-                  return YoutubeItem(video: videoList[index]);
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+          },
+        ),
       ),
     );
   }
 
-  Future<List<Video>> getVideosBy(int id) async {
-    return await service.getVideoFor(id);
+  Center _buildNoVideo() {
+    return Center(
+        child: Text(
+      translate('common.no_video'),
+      style: const TextStyle(color: Colors.white),
+    ));
   }
+
+  ListView _buildVideoList(VideoLoaded state) {
+    return ListView.builder(
+      itemCount: state.videos.length,
+      itemBuilder: (BuildContext context, int index) {
+        return YoutubeItem(video: state.videos[index]);
+      },
+    );
+  }
+
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }

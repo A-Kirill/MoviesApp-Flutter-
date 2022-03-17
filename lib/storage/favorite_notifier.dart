@@ -1,6 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import '../models/movies_response.dart';
+import '../models/models.dart';
 import 'json_storage.dart';
 
 class FavoriteNotifier with ChangeNotifier {

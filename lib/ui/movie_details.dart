@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movies_fltr/models/movies_response.dart';
-import 'package:movies_fltr/network/api_service.dart';
 import 'package:movies_fltr/storage/favorite_notifier.dart';
 import 'package:movies_fltr/ui/separator.dart';
 import 'package:movies_fltr/ui/video_list.dart';
@@ -9,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../storage/json_storage.dart';
 import '../supporting/supporting_methods.dart';
 import 'image_list.dart';
+import '../blocs/movie_bloc/movie_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MovieDetails extends StatefulWidget {
   final Movie movie;
@@ -22,16 +23,19 @@ class MovieDetails extends StatefulWidget {
 class _MovieDetailsState extends State<MovieDetails> {
   static const titleStyle =
       TextStyle(fontSize: 15, fontWeight: FontWeight.w500);
-  late ApiService service;
-  late Future<Movie> movieDetails;
+  final MovieBloc _moviesBloc = MovieBloc();
+
+  // late ApiService service;
+  // late Future<Movie> movieDetails;
   bool _inFavorites = false;
 
   @override
   initState() {
     super.initState();
-    service = ApiService();
+    // service = ApiService();
     isFavorite();
-    movieDetails = _fetchMovieBy(widget.movie.kinopoiskId);
+    _moviesBloc.add(GetMovieDetails(widget.movie.kinopoiskId));
+    // movieDetails = _fetchMovieBy(widget.movie.kinopoiskId);
   }
 
   @override
@@ -42,17 +46,44 @@ class _MovieDetailsState extends State<MovieDetails> {
       ),
       body: Container(
         decoration: buildBackgroundDecoration(context),
-        child: FutureBuilder<Movie>(
-            future: movieDetails,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return _buildContent(widget.movie, snapshot.data!);
-              } else if (!snapshot.hasData) {
-                return _buildContent(widget.movie);
-              }
-
-              return const Center(child: CircularProgressIndicator());
-            }),
+        child: BlocProvider(
+            create: (_) => _moviesBloc,
+            child: BlocListener<MovieBloc, MovieState>(
+              listener: (context, state) {
+                if (state is MovieError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message!),
+                    ),
+                  );
+                }
+              },
+              child:
+                  BlocBuilder<MovieBloc, MovieState>(builder: (context, state) {
+                if (state is MovieInitial) {
+                  return _buildLoading();
+                } else if (state is MovieLoading) {
+                  return _buildLoading();
+                } else if (state is MovieDetailsLoaded) {
+                  return _buildContent(widget.movie, state.movie);
+                } else if (state is MovieError) {
+                  return Container();
+                } else {
+                  return Container();
+                }
+              }),
+            )),
+        // child: FutureBuilder<Movie>(
+        //     future: movieDetails,
+        //     builder: (context, snapshot) {
+        //       if (snapshot.hasData) {
+        //         return _buildContent(widget.movie, snapshot.data!);
+        //       } else if (!snapshot.hasData) {
+        //         return _buildContent(widget.movie);
+        //       }
+        //
+        //       return const Center(child: CircularProgressIndicator());
+        //     }),
       ),
     );
   }
@@ -184,9 +215,9 @@ class _MovieDetailsState extends State<MovieDetails> {
     );
   }
 
-  Future<Movie> _fetchMovieBy(int id) async {
-    return await service.getMovieDetailsBy(id);
-  }
+  // Future<Movie> _fetchMovieBy(int id) async {
+  //   return await service.getMovieDetailsBy(id);
+  // }
 
   isFavorite() async {
     var state = await JsonStorage().isFavorite(widget.movie);
@@ -195,4 +226,5 @@ class _MovieDetailsState extends State<MovieDetails> {
     });
   }
 
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }
