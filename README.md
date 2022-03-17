@@ -14,6 +14,7 @@ MoviesApp - cross platform applications on Flutter for Android/iOS, shows the la
 
 ## Libraries & Tools Used
 
+- BLoC
 - Http
 - Provider
 - Json Serialization
