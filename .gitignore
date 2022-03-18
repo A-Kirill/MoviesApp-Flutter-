@@ -271,3 +271,4 @@ Thumbs.db
 tramp
 xcuserdata/
 lib/auth/secrets.dart
+.flutter-plugins-dependencies

@@ -11,7 +11,7 @@ class StorageManager implements ITranslatePreferences {
   Future<Locale> getPreferredLocale() async {
     final preferences = await SharedPreferences.getInstance();
     var locale = preferences.getString(_localeKey);
-    return localeFromString(locale!);
+    return localeFromString(locale ?? 'en');
   }
 
   @override
