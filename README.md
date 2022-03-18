@@ -6,6 +6,7 @@ MoviesApp - cross platform applications on Flutter for Android/iOS, shows the la
 
 ## Features
 
+- Search movie by name, month/year premier
 - Light/Dark mode toggle
 - Ru/En language toggle
 - Movie details info
@@ -14,6 +15,7 @@ MoviesApp - cross platform applications on Flutter for Android/iOS, shows the la
 
 ## Libraries & Tools Used
 
+- BLoC
 - Http
 - Provider
 - Json Serialization
@@ -21,7 +23,7 @@ MoviesApp - cross platform applications on Flutter for Android/iOS, shows the la
 - Carousel_slider
 - Youtube_player_flutter
 - Cached_network_image
-
+- Month_picker_dialog
 
 ## Before Run
 

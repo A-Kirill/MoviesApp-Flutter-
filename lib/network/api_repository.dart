@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:movies_fltr/models/models.dart';
 
 import 'api_service.dart';
@@ -5,7 +6,11 @@ import 'api_service.dart';
 class ApiRepository {
   final _service = ApiService();
 
-  Future<List<Movie>> getPremiers({required String month, required String year}) {
+  Future<List<Movie>> getPremiers(DateTime? date) {
+    var formatter = DateFormat('MMMM');
+    String month = formatter.format(date!);
+    String year = date.year.toString();
+
     return _service.getPremiers(month: month, year: year);
   }
 
