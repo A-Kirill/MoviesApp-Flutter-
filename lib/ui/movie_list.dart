@@ -3,6 +3,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../supporting/supporting_methods.dart';
 import '../blocs/movie_bloc/movie_bloc.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class MoviesList extends StatefulWidget {
   const MoviesList({Key? key}) : super(key: key);
@@ -15,11 +16,13 @@ class _MoviesListState extends State<MoviesList> {
   final MovieBloc _moviesBloc = MovieBloc();
   bool isSearchClicked = false;
   final TextEditingController _queryString = TextEditingController();
+  DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
-    _moviesBloc.add(GetMovieList());
+    selectedDate = DateTime.now();
+    _moviesBloc.add(GetMovieList(selectedDate));
   }
 
   @override
@@ -114,18 +117,43 @@ class _MoviesListState extends State<MoviesList> {
         background: const FlutterLogo(),
       ),
       actions: [
-        IconButton(
-          onPressed: () {
-            setState(() {
-              isSearchClicked = !isSearchClicked;
-            });
-          },
-          icon: isSearchClicked
-              ? const Icon(Icons.close_outlined)
-              : const Icon(Icons.search),
-        )
+        _buildSearchButton(),
+        _buildMonthPicker()
       ],
     );
+  }
+
+  IconButton _buildMonthPicker() {
+    return IconButton(
+          onPressed: (){
+            showMonthPicker(
+              context: context,
+              firstDate: DateTime(DateTime.now().year - 20, 1),
+              lastDate: DateTime(DateTime.now().year + 5, 12),
+              initialDate: selectedDate!,
+            ).then((date) {
+              if (date != null) {
+                setState(() {
+                  selectedDate = date;
+                  _moviesBloc.add(GetMovieList(selectedDate));
+                });
+              }
+            });
+          },
+          icon: const Icon(Icons.calendar_today));
+  }
+
+  IconButton _buildSearchButton() {
+    return IconButton(
+        onPressed: () {
+          setState(() {
+            isSearchClicked = !isSearchClicked;
+          });
+        },
+        icon: isSearchClicked
+            ? const Icon(Icons.close_outlined)
+            : const Icon(Icons.search),
+      );
   }
 
   Widget _buildLoading() => const Center(child: CircularProgressIndicator());

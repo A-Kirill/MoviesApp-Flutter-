@@ -14,7 +14,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       try {
         emit(MovieLoading());
         final mList =
-            await _apiRepository.getPremiers(month: 'APRIL', year: '2022');
+            await _apiRepository.getPremiers(event.mDate);
         emit(MovieLoaded(mList));
       } on NetworkError {
         emit(movieError());

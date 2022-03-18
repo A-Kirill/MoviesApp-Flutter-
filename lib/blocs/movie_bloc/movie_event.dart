@@ -7,7 +7,10 @@ abstract class MovieEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetMovieList extends MovieEvent {}
+class GetMovieList extends MovieEvent {
+  final DateTime? mDate;
+  const GetMovieList(this.mDate);
+}
 
 class GetSearchedMovies extends MovieEvent {
   final String query;
