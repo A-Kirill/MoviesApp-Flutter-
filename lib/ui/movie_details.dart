@@ -25,17 +25,13 @@ class _MovieDetailsState extends State<MovieDetails> {
       TextStyle(fontSize: 15, fontWeight: FontWeight.w500);
   final MovieBloc _moviesBloc = MovieBloc();
 
-  // late ApiService service;
-  // late Future<Movie> movieDetails;
   bool _inFavorites = false;
 
   @override
   initState() {
     super.initState();
-    // service = ApiService();
     isFavorite();
     _moviesBloc.add(GetMovieDetails(widget.movie.kinopoiskId));
-    // movieDetails = _fetchMovieBy(widget.movie.kinopoiskId);
   }
 
   @override
@@ -73,17 +69,6 @@ class _MovieDetailsState extends State<MovieDetails> {
                 }
               }),
             )),
-        // child: FutureBuilder<Movie>(
-        //     future: movieDetails,
-        //     builder: (context, snapshot) {
-        //       if (snapshot.hasData) {
-        //         return _buildContent(widget.movie, snapshot.data!);
-        //       } else if (!snapshot.hasData) {
-        //         return _buildContent(widget.movie);
-        //       }
-        //
-        //       return const Center(child: CircularProgressIndicator());
-        //     }),
       ),
     );
   }
@@ -214,10 +199,6 @@ class _MovieDetailsState extends State<MovieDetails> {
       ),
     );
   }
-
-  // Future<Movie> _fetchMovieBy(int id) async {
-  //   return await service.getMovieDetailsBy(id);
-  // }
 
   isFavorite() async {
     var state = await JsonStorage().isFavorite(widget.movie);
